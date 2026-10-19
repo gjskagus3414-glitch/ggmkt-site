@@ -144,7 +144,7 @@
       '<p class="ggal-diag__title" id="ggal-diag-title">빠른 광고 문의</p>' +
       '<p class="ggal-diag__desc">남겨주시면 담당자가 24시간 이내에 직접 연락드립니다.</p>' +
       '<form class="ggal-diag__form" novalidate>' +
-      '<label>브랜드명<input name="brand" required autocomplete="organization"></label>' +
+      '<label>브랜드명<input name="brand" required autocomplete="organization" placeholder="회사명이 아닌 브랜드명"></label>' +
       '<div class="ggal-diag__row"><label>성함<input name="name" required autocomplete="name" placeholder="홍길동"></label>' +
       '<label>직책<input name="position" required autocomplete="organization-title" placeholder="대표, 마케팅 팀장"></label></div>' +
       '<label>사이트 URL<input name="url" type="url" required placeholder="https://"></label>' +
@@ -173,8 +173,8 @@
       var data = {}; new FormData(dform).forEach(function (v, k) { data[k] = v; });
       if (window.GGAL_FORM_ENDPOINT) {
         fetch(window.GGAL_FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-          .then(function () { dmsg.textContent = '접수되었습니다. 24시간 이내에 연락드리겠습니다.'; dform.reset(); })
-          .catch(function () { dmsg.textContent = '전송에 실패했습니다. 카카오톡 상담으로 문의해 주세요.'; });
+          .then(function () { dmsg.textContent = '접수되었습니다. 24시간 이내에 연락드리겠습니다'; dform.reset(); })
+          .catch(function () { dmsg.textContent = '전송에 실패했습니다. 카카오톡 상담으로 문의해 주세요'; });
       } else {
         var q = Object.keys(data).map(function (k) { return k + '=' + encodeURIComponent(data[k]); }).join('&');
         location.href = (window.GGAL_CONTACT_URL || 'contact.html') + '?' + q + '#ggal-contact';
@@ -282,7 +282,7 @@
       done.textContent = '필수 항목을 입력해 주세요: ' + missing.closest('label').querySelector('.ggal-field__label').firstChild.textContent;
       done.classList.add('ggal-is-on'); missing.focus(); return;
     }
-    done.textContent = '광고 문의가 접수되었습니다. 영업일 기준 1일 안에 연락드리겠습니다.';
+    done.textContent = '광고 문의가 접수되었습니다. 영업일 기준 1일 안에 연락드리겠습니다';
     done.classList.add('ggal-is-on');
   });
   // 스크롤 블러 인 (Mobbin 스타일) — 섹션 제목·박스가 화면에 들어올 때 한 번
@@ -290,7 +290,7 @@
     var root = document.querySelector('.ggal-page');
     if (!root || !('IntersectionObserver' in window)) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var sel = '.ggal-section .ggal-head, .ggal-auth__row > div, .ggal-auth__ai, .ggal-res, .ggal-res2, .ggal-lever__list li, .ggal-case, .ggal-easy__card, .ggal-split > div, .ggal-ai2 > div, .ggal-svc__card, .ggal-plan, ' +
+    var sel = '.ggal-section .ggal-head, .ggal-auth__row > div, .ggal-auth__ai, .ggal-res, .ggal-res2, .ggal-lever__list li, .ggal-case, .ggal-easy__card, .ggal-vs2__col, .ggal-ops__card, .ggal-flow__you, .ggal-cp, .ggal-ai2 > div, .ggal-svc__card, .ggal-plan, ' +
               '.ggal-basic__card, .ggal-worry__card, .ggal-switch__card, .ggal-bcard, .ggal-why, .ggal-ins-card, .ggal-landcard, .ggal-rules';
     var els = root.querySelectorAll(sel);
     if (!els.length) return;
@@ -324,7 +324,7 @@
       requestAnimationFrame(step);
     }, 500);
   })();
-  // 위닝 소재 슬라이더: 3초마다 한 장씩 자동, 끝나면 처음으로. 버튼·터치 직후에만 잠시 대기. 보이는 영상만 재생
+  // 위닝 소재 슬라이더: 2.1초마다 한 장씩 자동, 끝나면 처음으로. 버튼·터치 직후에만 잠시 대기. 보이는 영상만 재생
   document.querySelectorAll('[data-ggal-slider]').forEach(function (sl) {
     var track = sl.querySelector('.ggal-slider__track');
     var slides = track.querySelectorAll('.ggal-slide');
@@ -345,7 +345,7 @@
     var hold = function (ms) { holdUntil = Date.now() + ms; };
     track.addEventListener('touchstart', function () { hold(8000); }, { passive: true });
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduce) setInterval(function () { if (visible && !paused && Date.now() > holdUntil && !document.hidden) go(1); }, 3000);
+    if (!reduce) setInterval(function () { if (visible && !paused && Date.now() > holdUntil && !document.hidden) go(1); }, 2100);
     var vids = track.querySelectorAll('video');
     var onScroll = function () {
       var i = Math.min(slides.length, index() + 1);
@@ -424,5 +424,230 @@
     else if (auto) auto.classList.add('ggal-is-play');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) setInterval(function () { if (seen && !document.hidden && Date.now() > wait) set(k + 1); }, 3600);
+  });
+  // '맡기면 쉬워집니다' 흐름: 1.1초마다 다음 단계, 끝나면 매출 막대 → 처음부터
+  document.querySelectorAll('[data-ggal-flow]').forEach(function (fl) {
+    var nodes = fl.querySelectorAll('.ggal-flow__node'), n = nodes.length, k = -1, seen = !('IntersectionObserver' in window);
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var paint = function () {
+      nodes.forEach(function (el, i) { el.classList.toggle('ggal-is-on', i <= k); el.classList.toggle('ggal-is-now', i === k); });
+      fl.style.setProperty('--p', n > 1 ? Math.max(0, Math.min(k, n - 1)) / (n - 1) : 0);
+      fl.classList.toggle('ggal-is-done', k >= n);
+    };
+    if (reduce) { k = n; paint(); return; }
+    if (!seen) new IntersectionObserver(function (es) { es.forEach(function (e) { seen = e.isIntersecting; }); }, { threshold: .3 }).observe(fl);
+    setInterval(function () { if (!seen || document.hidden) return; k = k >= n + 1 ? -1 : k + 1; paint(); }, 1100);
+  });
+
+  // 성공사례 케이스 플레이어: 6초마다 다음 사례. 곡선 그리기 + 숫자 카운트업 + 메모 2개
+  document.querySelectorAll('[data-ggal-cp]').forEach(function (cp) {
+    var tabs = [].slice.call(cp.querySelectorAll('.ggal-cp__tab')), cur = 0, seen = !('IntersectionObserver' in window), hold = 0, timer = null;
+    var $ = function (s) { return cp.querySelector(s); };
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W = 600, H = 240, T = 18, B = 6;
+    var fmt = function (v, e) { return e < 10 ? (Math.round(v * 10) / 10).toLocaleString('ko-KR') : Math.round(v).toLocaleString('ko-KR'); };
+    var curve = function (s0) {
+      var pts = [];
+      for (var i = 0; i <= 24; i++) {
+        var t = i / 24, base = s0 + (1 - s0) * Math.pow(t, 2.1), wob = Math.sin(i * 1.7) * 0.025 * t * (1 - t) * 4;
+        var v = Math.max(0, Math.min(1, base + wob)); if (i === 24) v = 1;
+        pts.push([t * W, H - B - v * (H - T - B)]);
+      }
+      return pts;
+    };
+    var show = function (n) {
+      cur = n; var d = tabs[n].dataset, s = d.s === '' ? null : +d.s, e = +d.e, s0 = s === null ? 0.12 : s / e;
+      tabs.forEach(function (t, i) { t.classList.toggle('ggal-is-on', i === n); t.setAttribute('aria-selected', i === n ? 'true' : 'false'); });
+      $('.ggal-cp__tag').textContent = d.tag; $('.ggal-cp__who').textContent = '광고주 ' + d.who;
+      $('.ggal-cp__metric').textContent = d.metric; $('.ggal-cp__unit').textContent = d.unit;
+      $('.ggal-cp__from').innerHTML = d.from + ' · <b class="ggal-cp__time">' + d.time + '</b> 만에';
+      var bd = $('.ggal-cp__badge'); bd.textContent = d.badge; bd.hidden = !d.badge;
+      $('.ggal-cp__axis-end').textContent = d.axis === '시간' ? '24시간' : d.days + '일';
+      $('.ggal-cp__ch1').textContent = d.ch1; $('.ggal-cp__ch2').textContent = d.ch2;
+      var p = curve(s0), line = 'M' + p.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' L');
+      $('.ggal-cp__line').setAttribute('d', line);
+      $('.ggal-cp__area').setAttribute('d', line + ' L' + W + ',' + H + ' L0,' + H + ' Z');
+      var pc = function (q) { return [(q[0] / W * 100) + '%', (q[1] / H * 100) + '%']; };
+      var h = pc(p[24]); cp.style.setProperty('--hx', h[0]); cp.style.setProperty('--hy', h[1]);
+      var n1 = $('.ggal-cp__note--1'), n2 = $('.ggal-cp__note--2'), a = pc(p[11]), b = pc(p[18]);
+      n1.style.setProperty('--x', a[0]); n1.style.setProperty('--y', a[1]); n1.querySelector('b').textContent = d.ch1;
+      n2.style.setProperty('--x', b[0]); n2.style.setProperty('--y', b[1]); n2.querySelector('b').textContent = d.ch2;
+      cp.classList.remove('ggal-is-draw'); void cp.offsetWidth; cp.classList.add('ggal-is-draw');
+      var val = $('.ggal-cp__val'), from = s === null ? 0 : s;
+      if (reduce) { val.textContent = fmt(e, e); return; }
+      var t0 = null, step = function (ts) {
+        if (!t0) t0 = ts; var k = Math.min(1, (ts - t0) / 1600), v = from + (e - from) * (1 - Math.pow(1 - k, 3));
+        val.textContent = fmt(v, e); if (k < 1 && cur === n) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    var next = function () { if (!seen || document.hidden || Date.now() < hold) return; show((cur + 1) % tabs.length); };
+    tabs.forEach(function (t, i) { t.addEventListener('click', function () { hold = Date.now() + 12000; cp.classList.add('ggal-is-hold'); show(i); setTimeout(function () { cp.classList.remove('ggal-is-hold'); }, 12000); }); });
+    if (!seen) new IntersectionObserver(function (es) { es.forEach(function (e) { var was = seen; seen = e.isIntersecting; if (seen && !was) show(cur); }); }, { threshold: .3 }).observe(cp);
+    else show(0);
+    if (!reduce) setInterval(next, 6000);
+  });
+  // 첫 화면 일러스트: 프레임 폭에 맞춰 축소 비율 자동 계산 (잘림 방지)
+  (function () {
+    var fr = document.querySelector('.ggal-stage-frame'), wrap = fr && fr.querySelector('.ggal-stage-wrap');
+    if (!wrap) return;
+    var fit = function () {
+      var cs = getComputedStyle(fr), w = fr.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      wrap.style.setProperty('--s', Math.max(.25, Math.min(1, w / 1120)).toFixed(3));
+    };
+    fit(); addEventListener('resize', fit);
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(fr);
+  })();
+  // 인하우스 vs 깔깔마케팅: 왼쪽은 한 칸씩 느리게(1명), 오른쪽은 동시에. 1년 인건비 카운트업
+  document.querySelectorAll('[data-ggal-vs2]').forEach(function (vs) {
+    var tasks = vs.querySelectorAll('.ggal-vs2__task'), k = -1, seen = false, counted = false;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var yr = vs.querySelector('[data-ggal-year]');
+    var tick = function () {
+      if (!seen || document.hidden) return;
+      k = k >= tasks.length ? -1 : k + 1;
+      tasks.forEach(function (t, i) { t.classList.toggle('ggal-is-now', i === k); t.classList.toggle('ggal-is-done', i < k); });
+    };
+    var count = function () {
+      if (counted || !yr || reduce) return; counted = true;
+      var t0 = null, step = function (ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1400); yr.textContent = Math.round(4392 * (1 - Math.pow(1 - p, 3))).toLocaleString('ko-KR'); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    var start = function () { seen = true; vs.classList.add('ggal-is-play'); count(); };
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else seen = false; }); }, { threshold: .25 }).observe(vs);
+    else start();
+    if (!reduce) setInterval(tick, 1500);
+  });
+  // 화면에 들어오면 모션 시작 (data-ggal-play)
+  (function () {
+    var els = document.querySelectorAll('[data-ggal-play]');
+    if (!els.length) return;
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('ggal-is-play'); }); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('ggal-is-play', e.isIntersecting); }); }, { threshold: .2 });
+    els.forEach(function (e) { io.observe(e); });
+  })();
+  // AB 테스트 v2: 조합 20개 생성 → 이긴 3개 표시 → 예산 막대 → 반복
+  document.querySelectorAll('[data-ggal-ab2]').forEach(function (ab) {
+    var cols = ab.querySelectorAll('.ggal-ab2__col'), rs = ab.querySelectorAll('[data-r]'), ss = ab.querySelectorAll('[data-s]');
+    var grid = ab.querySelector('.ggal-ab2__grid'), cells = grid.querySelectorAll('i'), cnt = ab.querySelector('.ggal-ab2__cnt');
+    var NS = ss.length, WIN = [2 * NS + 2, 3 * NS + 3, 0 * NS + 1];
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var stage = function (n) { cols.forEach(function (c, i) { c.classList.toggle('ggal-is-now', i === n); c.classList.toggle('ggal-is-past', i < n); }); };
+    var reset = function () {
+      cells.forEach(function (c) { c.classList.remove('ggal-is-on', 'ggal-is-win'); });
+      grid.classList.remove('ggal-is-judged'); ab.classList.remove('ggal-is-budget'); cnt.textContent = '0';
+      rs.forEach(function (x) { x.classList.remove('ggal-is-on'); }); ss.forEach(function (x) { x.classList.remove('ggal-is-on'); });
+    };
+    var final = function () { cells.forEach(function (c, i) { c.classList.add('ggal-is-on'); if (WIN.indexOf(i) > -1) c.classList.add('ggal-is-win'); }); grid.classList.add('ggal-is-judged'); ab.classList.add('ggal-is-budget'); cnt.textContent = cells.length; stage(3); };
+    if (reduce) { final(); return; }
+    var t = 0, seen = false, playing = false;
+    var run = function () {
+      if (playing) return; playing = true; reset(); stage(0); var k = 0;
+      var iv = setInterval(function () {
+        if (k < cells.length) {
+          var r = Math.floor(k / NS), s2 = k % NS;
+          rs.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === r); });
+          ss.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === s2); });
+          cells[k].classList.add('ggal-is-on'); cnt.textContent = k + 1; if (k === 2) stage(1); k++;
+        } else {
+          clearInterval(iv);
+          rs.forEach(function (x) { x.classList.remove('ggal-is-on'); }); ss.forEach(function (x) { x.classList.remove('ggal-is-on'); });
+          setTimeout(function () { WIN.forEach(function (i) { cells[i].classList.add('ggal-is-win'); }); grid.classList.add('ggal-is-judged'); }, 300);
+          setTimeout(function () { stage(2); ab.classList.add('ggal-is-budget'); }, 1000);
+          setTimeout(function () { playing = false; if (seen) run(); }, 5200);
+        }
+      }, 180);
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { seen = e.isIntersecting; if (seen) run(); }); }, { threshold: .3 }).observe(ab);
+    else final();
+  });
+  // 비용 비교 v2: 막대 채우기 + 절감액 카운트업
+  document.querySelectorAll('[data-ggal-cmp2]').forEach(function (el) {
+    var b = el.querySelector('[data-ggal-save]'), done = false;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var go = function () {
+      el.classList.add('ggal-is-play'); if (done || !b || reduce) return; done = true;
+      var to = +b.dataset.ggalSave, t0 = null, step = function (ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1500); b.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('ko-KR'); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) go(); }); }, { threshold: .3 }).observe(el); else go();
+  });
+  // 광고 문의 의심 카드: 일매출 숫자 반복 카운트업 (그래프 3.6초 주기에 맞춤)
+  document.querySelectorAll('[data-ggal-wq-count]').forEach(function (b) {
+    var to = +b.dataset.ggalWqCount, box = b.closest('[data-ggal-play]');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    var run = function () {
+      if (!box || !box.classList.contains('ggal-is-play')) return;
+      var t0 = null, step = function (ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1600); b.textContent = Math.round(to * p * p).toLocaleString('ko-KR'); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    setTimeout(run, 300); setInterval(run, 3600);
+  });
+  // 성공사례 Case 카드: 큰 숫자 반복 카운트업 (막대 6초 주기)
+  document.querySelectorAll('[data-ggal-cs-to]').forEach(function (b) {
+    var to = +b.dataset.ggalCsTo, box = b.closest('[data-ggal-play]');
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var run = function () {
+      if (!box || !box.classList.contains('ggal-is-play')) return;
+      var t0 = null, step = function (ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1500); b.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('ko-KR'); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    setTimeout(run, 400); setInterval(run, 6000);
+  });
+  // AB 테스트 v3: 가설 고르기 → 소재 3개 검증 → 이긴 소재 예산 → 다음 가설 (반복, 사례 4개 중 랜덤)
+  document.querySelectorAll('[data-ggal-ab3]').forEach(function (ab) {
+    var cols = ab.querySelectorAll('.ggal-ab2__col'), rs = ab.querySelectorAll('[data-r]'), ss = ab.querySelectorAll('[data-s]');
+    var vs = ab.querySelectorAll('.ggal-ab3__v'), pick = ab.querySelector('.ggal-ab3__pick b'), wtag = ab.querySelector('.ggal-ab3__wtag'),
+        wtxt = ab.querySelector('.ggal-ab3__win p'), next = ab.querySelector('.ggal-ab3__next b');
+    var RN = ['가격', '편의', '공감', '신뢰', '차별점'], SN = ['질문', '숫자', '상황', '후기'];
+    var CASES = [
+      { r: 2, s: 2, c: ['"매일 밤 목이 뻐근하다면"', '"베개 바꾸고 아침이 달라졌어요"', '"직장인 10명 중 7명이 겪는"'], w: [46, 92, 58], win: 1, next: '신뢰 × 후기' },
+      { r: 0, s: 1, c: ['"하루 330원으로 끝내는 관리"', '"3개 사면 1개 더"', '"정가보다 41% 저렴하게"'], w: [90, 50, 63], win: 0, next: '차별점 × 질문' },
+      { r: 3, s: 3, c: ['"재구매율 68%, 이유가 있습니다"', '"리뷰 1만 개가 말해줍니다"', '"엄마가 먼저 다시 주문했어요"'], w: [60, 47, 91], win: 2, next: '편의 × 상황' },
+      { r: 1, s: 2, c: ['"바쁜 아침, 손이 안 가는 날에도"', '"출근 전 30초면 끝"', '"설거지 없이 한 번에"'], w: [44, 93, 57], win: 1, next: '공감 × 질문' }
+    ];
+    var cur = 0;
+    var apply = function (k) {
+      var c = CASES[k]; cur = k;
+      if (pick) pick.textContent = RN[c.r] + ' × ' + SN[c.s];
+      vs.forEach(function (v, i) {
+        var sp = v.querySelector('span'); if (sp) sp.textContent = c.c[i];
+        v.style.setProperty('--w', c.w[i] + '%'); v.classList.toggle('ggal-ab3__v--win', i === c.win);
+      });
+      if (wtag) wtag.textContent = 'ABC'.charAt(c.win) + ' 소재';
+      if (wtxt) wtxt.textContent = c.c[c.win];
+      if (next) next.textContent = c.next;
+    };
+    var stage = function (n) { cols.forEach(function (c, i) { c.classList.toggle('ggal-is-now', i === n); c.classList.toggle('ggal-is-past', i < n); }); };
+    var cls = ['ggal-is-pick', 'ggal-is-test', 'ggal-is-judge', 'ggal-is-budget', 'ggal-is-next'];
+    var lock = function () { var c = CASES[cur]; rs.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === c.r); }); ss.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === c.s); }); };
+    var final = function () { apply(0); lock(); cls.forEach(function (c) { ab.classList.add(c); }); stage(3); };
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { final(); return; }
+    var seen = false, playing = false, T = [], first = true;
+    var at = function (ms, fn) { T.push(setTimeout(fn, ms)); };
+    var run = function () {
+      if (playing) return; playing = true; T.forEach(clearTimeout); T = [];
+      cls.forEach(function (c) { ab.classList.remove(c); }); rs.forEach(function (x) { x.classList.remove('ggal-is-on'); }); ss.forEach(function (x) { x.classList.remove('ggal-is-on'); });
+      var k = cur; if (!first) { while (k === cur) k = Math.floor(Math.random() * CASES.length); } first = false; apply(k);
+      stage(0); var n = Math.floor(Math.random() * 5);
+      var scan = setInterval(function () { rs.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === n % rs.length); }); ss.forEach(function (x, i) { x.classList.toggle('ggal-is-on', i === (n + 1) % ss.length); }); n++; }, 160);
+      at(1300, function () { clearInterval(scan); lock(); ab.classList.add('ggal-is-pick'); });
+      at(2300, function () { stage(1); ab.classList.add('ggal-is-test'); });
+      at(4000, function () { ab.classList.add('ggal-is-judge'); });
+      at(4900, function () { stage(2); ab.classList.add('ggal-is-budget'); });
+      at(6200, function () { ab.classList.add('ggal-is-next'); });
+      at(9000, function () { playing = false; if (seen) run(); });
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { seen = e.isIntersecting; if (seen) run(); }); }, { threshold: .3 }).observe(ab);
+    else final();
+  });
+  // 광고 문의 진행 순서: 한 단계씩 켜지며 레일이 내려감 (반복)
+  document.querySelectorAll('[data-ggal-st2]').forEach(function (ol) {
+    var li = ol.querySelectorAll('li'), n = li.length, k = -1, seen = !('IntersectionObserver' in window);
+    var paint = function () { li.forEach(function (e, i) { e.classList.toggle('ggal-is-on', i <= k); e.classList.toggle('ggal-is-now', i === k); }); ol.style.setProperty('--p', n > 1 ? Math.max(0, Math.min(k, n - 1)) / (n - 1) : 0); };
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { k = n - 1; paint(); return; }
+    if (!seen) new IntersectionObserver(function (es) { es.forEach(function (e) { seen = e.isIntersecting; }); }, { threshold: .3 }).observe(ol);
+    setInterval(function () { if (!seen || document.hidden) return; k = k >= n + 1 ? -1 : k + 1; paint(); }, 1000);
   });
 })();
