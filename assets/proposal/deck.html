@@ -1825,7 +1825,7 @@
   const partPage = {};
   src.forEach((p, k) => {
     if (p.dataset.part) { part = p.dataset.part; ptitle = p.dataset.title; partPage[part] = k; }
-    if (!p.hasAttribute('data-norh') && part) p.insertAdjacentHTML('afterbegin', '<div class="rh"><span><b>' + part + '</b>' + ptitle + '</span><i>깔깔마케팅 제안서</i></div>');
+    if (!p.hasAttribute('data-norh') && part) p.insertAdjacentHTML('afterbegin', '<div class="rh"><span><b>' + part + '</b>' + ptitle + '</span></div>');
     p.querySelectorAll('[data-tiles]').forEach(t => {
       const n = +t.dataset.tiles, d0 = +t.dataset.d0 || 0;
       t.innerHTML = Array.from({ length: n }, (_, j) => '<i class="a" style="--k:pop;--t:.45s;--d:' + (d0 + j * 0.035).toFixed(3) + 's"></i>').join('');
